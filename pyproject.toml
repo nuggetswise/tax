@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{include = "agentic_tax_drafter", from = "src"}]
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.14"
+python = ">=3.9,<3.9.7 || >3.9.7,<3.14"
 streamlit = "^1.46.0"
 openai = "^1.91.0"
 pandas = "^2.3.0"
