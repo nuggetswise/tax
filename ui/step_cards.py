@@ -68,28 +68,32 @@ def render_step_card(step_name: str, step_data: Dict[str, Any], step_number: int
 
 
 def render_workflow_timeline(progress_data: Dict[str, Any]):
-    """Render workflow steps as a compact table."""
+    """Render workflow steps as a compact table with smaller font and tighter spacing."""
     if not progress_data:
         return
     
-    st.markdown("### 🗂️ Workflow Steps")
+    # Add custom CSS for smaller font and tighter spacing
+    st.markdown(
+        """
+        <style>
+        .workflow-table {font-size: 0.92em;}
+        .workflow-table th, .workflow-table td {padding: 0.2em 0.7em;}
+        .workflow-table th {font-weight: 700;}
+        .workflow-table-row {border-bottom: 1px solid #22222222;}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
     
-    # Table header
-    cols = st.columns([2, 1, 1])
-    with cols[0]:
-        st.markdown("**Step**")
-    with cols[1]:
-        st.markdown("**Status**")
-    with cols[2]:
-        st.markdown("**Duration**")
-    
-    # Table rows
+    # Build table HTML
+    table_html = [
+        '<table class="workflow-table">',
+        '<tr><th>Step</th><th>Status</th><th>Duration</th></tr>'
+    ]
     for step_name, step_info in progress_data.items():
-        cols = st.columns([2, 1, 1])
         status = step_info.get("status", "pending")
         duration = step_info.get("duration", 0.0)
         error = step_info.get("error", None)
-        
         # Status icon
         if status == "completed":
             icon = "✅"
@@ -103,17 +107,15 @@ def render_workflow_timeline(progress_data: Dict[str, Any]):
         else:
             icon = "⬜"
             status_text = status.title()
-        
-        with cols[0]:
-            st.write(step_name)
-        with cols[1]:
-            st.write(f"{icon} {status_text}")
-        with cols[2]:
-            st.write(f"{duration:.2f}s")
-        
-        # Expandable error details if failed
-        if status == "failed" and error:
-            st.expander(f"Error Details for {step_name}").write(error)
+        row = f'<tr class="workflow-table-row"><td>{step_name}</td><td>{icon} {status_text}</td><td>{duration:.2f}s</td></tr>'
+        table_html.append(row)
+    table_html.append('</table>')
+    st.markdown("\n".join(table_html), unsafe_allow_html=True)
+    # Show error details below table if any
+    for step_name, step_info in progress_data.items():
+        if step_info.get("status") == "failed" and step_info.get("error"):
+            with st.expander(f"Error Details for {step_name}"):
+                st.write(step_info["error"])
 
 
 def render_progress_summary(progress_data: Dict[str, Any]) -> None:

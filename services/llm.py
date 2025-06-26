@@ -68,6 +68,8 @@ class LLMService:
                     "api_key": cohere_key,
                     "priority": 2
                 })
+            except ImportError:
+                print("Warning: Cohere package not installed. Install with: poetry install --with optional")
             except Exception as e:
                 print(f"Warning: Cohere initialization failed: {e}")
         
@@ -84,6 +86,8 @@ class LLMService:
                     "api_key": groq_key,
                     "priority": 3
                 })
+            except ImportError:
+                print("Warning: Groq package not installed. Install with: poetry install --with optional")
             except Exception as e:
                 print(f"Warning: Groq initialization failed: {e}")
         
@@ -100,6 +104,8 @@ class LLMService:
                     "api_key": gemini_key,
                     "priority": 4
                 })
+            except ImportError:
+                print("Warning: Google GenerativeAI package not installed. Install with: poetry install --with optional")
             except Exception as e:
                 print(f"Warning: Gemini initialization failed: {e}")
         

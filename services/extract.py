@@ -1,15 +1,30 @@
 """
 Data extraction service for tax documents.
-Handles PDF parsing, OCR, and CSV/Excel file processing.
+Handles CSV/Excel file processing with optional PDF support.
 """
 
 import os
 import pandas as pd
 from typing import Dict, List, Any, Optional, Union
-import PyPDF2
-import pdfplumber
-import pytesseract
-from PIL import Image
+
+# Optional PDF dependencies
+try:
+    import PyPDF2
+    import pdfplumber
+    PDF_AVAILABLE = True
+except ImportError:
+    PDF_AVAILABLE = False
+    print("Warning: PDF processing not available. Install with: pip install pypdf2 pdfplumber")
+
+# Optional OCR dependencies
+try:
+    import pytesseract
+    from PIL import Image
+    OCR_AVAILABLE = True
+except ImportError:
+    OCR_AVAILABLE = False
+    print("Warning: OCR capabilities not available. Install with: pip install pytesseract pillow")
+
 import io
 import base64
 from services.provenance import get_provenance_tracker
@@ -37,6 +52,8 @@ class DataExtractor:
             file_type = self._detect_file_type(file_path)
         
         if file_type == "pdf":
+            if not PDF_AVAILABLE:
+                raise ValueError("PDF processing not available. Install pypdf2 and pdfplumber.")
             return self._extract_from_pdf(file_path)
         elif file_type in ["csv", "excel"]:
             return self._extract_from_spreadsheet(file_path, file_type)

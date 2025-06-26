@@ -507,19 +507,29 @@ def main():
     # Initialize session state
     initialize_session_state()
     
-    # Main title and description (more compact)
+    # Main title and user guide
     st.title("🤖 Agentic Tax Return Drafter")
-    st.markdown("**AI-powered U.S. corporate tax return preparation with full audit trail**")
+    st.markdown("""
+    **How to Use This App**
+    1. **Select or upload a tax document** (CSV, Excel, or PDF).
+    2. **Start the workflow** — the agent will:
+       - Extract financial data from your document
+       - Draft a full Form 1120 (corporate tax return)
+       - Run diagnostics to flag issues or inconsistencies
+       - Suggest adjustments for review
+    3. **Review results**: See the drafted form, diagnostics, and suggestions.
+    4. **Download your results and audit trail** from the sidebar.
+    """)
     
     # Create main layout
-    col1, col2 = st.columns([3, 1])  # Changed from [2, 1] to [3, 1] for more main content space
+    col1, col2 = st.columns([3, 1])
     
     with col1:
         # Main content area
         if not st.session_state.uploaded_files:
             render_file_selection_section()
         else:
-            render_file_preview()
+            # File preview removed for compactness
             st.divider()
             render_workflow_section()
             render_results_section()
@@ -529,18 +539,29 @@ def main():
         render_llm_status_section()
         render_provenance_section()
         
-        # File status (more compact)
+        # File status (with download)
         if st.session_state.uploaded_files:
             st.sidebar.header("📁 Files")
             for file in st.session_state.uploaded_files:
                 st.sidebar.write(f"📄 {file['name']}")
                 st.sidebar.caption(f"{file['size'] / 1024:.1f} KB")
+                try:
+                    with open(file['path'], "rb") as f:
+                        st.sidebar.download_button(
+                            label="Download",
+                            data=f.read(),
+                            file_name=file['name'],
+                            mime="text/csv" if file['name'].endswith('.csv') else None
+                        )
+                except Exception:
+                    pass
         
         # Workflow status (more compact)
         if st.session_state.context:
             st.sidebar.header("⚙️ Status")
             progress_data = st.session_state.get("progress", {})
             if progress_data:
+                render_workflow_timeline(progress_data)
                 completed = sum(1 for data in progress_data.values() if data.get("status") == "completed")
                 total = len(progress_data)
                 st.sidebar.progress(completed / total if total > 0 else 0)

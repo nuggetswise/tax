@@ -299,6 +299,35 @@ For issues and questions:
 4. Check the LLM status in the sidebar
 5. Ensure uploaded files are in supported formats
 
+## ☁️ Streamlit Cloud Deployment
+
+### Fast Deployment (Recommended)
+For faster deployment on Streamlit Cloud, the project includes a `requirements.txt` file with core dependencies only:
+
+```bash
+# Core dependencies for fast deployment
+streamlit>=1.46.0
+openai>=1.91.0
+pandas>=2.3.0
+pydantic>=2.11.7
+pypdf2>=3.0.1
+pdfplumber>=0.11.7
+python-dotenv>=1.1.1
+```
+
+### Full Feature Deployment
+For full OCR and multi-provider LLM support, install optional dependencies:
+
+```bash
+poetry install --with optional
+```
+
+### Deployment Tips
+1. **Use requirements.txt** for faster initial deployment
+2. **Add environment variables** in Streamlit Cloud dashboard
+3. **Start with OpenAI only** - add other providers later
+4. **Monitor deployment logs** for any missing dependencies
+
 ---
 
 **Built with ❤️ for the future of tax preparation**

@@ -7,6 +7,7 @@ from typing import Dict, List, Any, Optional, Callable
 from abc import ABC, abstractmethod
 import streamlit as st
 from services.provenance import get_provenance_tracker
+import time
 
 
 class BaseStep(ABC):
@@ -69,63 +70,28 @@ class WorkflowEngine:
         self.steps.append(step)
     
     def execute(self, context: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Execute all workflow steps in order.
-        
-        Args:
-            context: Initial workflow context
-            
-        Returns:
-            Final context after all steps complete
-        """
-        # Initialize progress tracking
-        if "progress" not in st.session_state:
-            st.session_state["progress"] = {}
-        
-        for i, step in enumerate(self.steps):
+        """Execute all workflow steps in order, recording accurate durations."""
+        self.progress = {}
+        for step in self.steps:
+            step_info = {"status": "pending", "duration": 0.0, "error": None}
+            self.progress[step.name] = step_info
+            start_time = time.time()
             try:
-                # Update step status
                 step.status = "running"
-                step.start_time = st.session_state.get("current_time", 0)
-                
-                # Update progress in session state
-                st.session_state["progress"][step.name] = {
-                    "status": "running",
-                    "step_number": i + 1,
-                    "total_steps": len(self.steps)
-                }
-                
-                # Execute step
+                step_info["status"] = "running"
                 context = step.run(context)
-                
-                # Mark step as completed
                 step.status = "completed"
-                step.end_time = st.session_state.get("current_time", 0)
-                
-                # Update progress
-                st.session_state["progress"][step.name] = {
-                    "status": "completed",
-                    "step_number": i + 1,
-                    "total_steps": len(self.steps),
-                    "execution_time": step.get_execution_time()
-                }
-                
+                step_info["status"] = "completed"
             except Exception as e:
-                # Handle step failure
-                context = step.on_error(context, e)
-                
-                # Update progress with error
-                st.session_state["progress"][step.name] = {
-                    "status": "failed",
-                    "step_number": i + 1,
-                    "total_steps": len(self.steps),
-                    "error": str(e)
-                }
-                
-                # Optionally continue or break
-                if not self._should_continue_on_error(step, e):
-                    break
-        
+                step.status = "failed"
+                step_info["status"] = "failed"
+                step_info["error"] = str(e)
+                break
+            finally:
+                end_time = time.time()
+                step_info["duration"] = end_time - start_time
+        # Save progress to context for UI
+        context["progress"] = self.progress
         return context
     
     def _should_continue_on_error(self, step: BaseStep, error: Exception) -> bool:
