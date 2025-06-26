@@ -1,0 +1,27 @@
+Account,Description,Debit,Credit,Category
+4000,Gross Receipts,,850000,Income
+5000,Cost of Goods Sold,85000,,Expense
+6000,Salaries and Wages,320000,,Expense
+6100,Employee Benefits,45000,,Expense
+6200,Payroll Taxes,28000,,Expense
+6300,Rent Expense,36000,,Expense
+6400,Utilities,12000,,Expense
+6500,Insurance,8000,,Expense
+6600,Advertising,15000,,Expense
+6700,Supplies,8000,,Expense
+6800,Equipment Rental,12000,,Expense
+6900,Professional Services,25000,,Expense
+7000,Interest Income,,12000,Income
+7100,Dividend Income,,8000,Income
+7200,Equipment Sales,,3000,Income
+7300,Interest Expense,2000,,Expense
+7400,Depreciation,28000,,Expense
+7500,Amortization,5000,,Expense
+7600,Charitable Contributions,5000,,Expense
+7700,Meals and Entertainment,12000,,Expense
+7800,Travel Expense,18000,,Expense
+7900,Office Expense,6000,,Expense
+8000,Bank Charges,800,,Expense
+8100,Miscellaneous Expense,3000,,Expense
+8200,Software Licenses,15000,,Expense
+8300,Conference Expenses,8000,,Expense 
